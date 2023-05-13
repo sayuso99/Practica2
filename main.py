@@ -14,9 +14,25 @@ def randomForest():
 
 app = Flask(__name__)
 
+@app.route("/")
 @app.route("/index.html")
 def index():
-    return render_template("index.html")
+    return render_template("/index.html")
+
+@app.route("/")
+@app.route("/ipProblematica.html")
+def ipProblematica():
+    return render_template("/ipProblematica.html")
+
+@app.route("/")
+@app.route("/dispositivosVulnerables.html")
+def dispositivosVulnerables():
+    return render_template("/dispositivosVulnerables.html")
+
+@app.route("/")
+@app.route("/10vulnerabilidades.html")
+def vulnerabilidades():
+    return render_template("/10vulnerabilidades.html")
 
 if __name__ == '__main__':
    app.run(debug = True)
