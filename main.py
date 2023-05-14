@@ -57,13 +57,13 @@ def dispositivosVulnerables():
 
 @app.route("/dispositivosPeligrosos.html", methods=["GET","POST"])
 def dispositivosPeligrosos():
-    swi = request.form.get('swiMore', default=7)
+    swi = request.form.get('swiMore', default="")
     df_ipProblematica = pd.DataFrame()
     con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
-    if swi == 0:
-        query = con.execute("SELECT ID, (SERVICES/INSECURES) AS secure FROM DEVICES WHERE (SERVICES/INSECURES) >= 0.33;")
+    if swi == "on":
+        query = con.execute("SELECT ID, (SERVICES||'.0'/INSECURES) AS secure FROM DEVICES WHERE (SERVICES/INSECURES) >= 0.33;")
     else:
-        query = con.execute("SELECT ID, (SERVICES/INSECURES) AS secure FROM DEVICES WHERE (SERVICES/INSECURES) < 0.33;")
+        query = con.execute("SELECT ID, (SERVICES||'.0'/INSECURES) AS secure FROM DEVICES WHERE (SERVICES/INSECURES) < 0.33;")
     data = query.fetchall()
     df_problematic_ips = pd.DataFrame(data, columns=['IP', 'secure'])
     fig = go.Figure(data=[
@@ -72,7 +72,7 @@ def dispositivosPeligrosos():
     fig.update_layout(barmode='group') #title_text="Top Dispositivos vulnerables", title_font_size=41,
     a = plotly.utils.PlotlyJSONEncoder
     graphDispPeligrosos = json.dumps(fig, cls=a)
-    return render_template("/dispositivosPeligrosos.html", graphDispVulnerables=graphDispPeligrosos, numDisp=swi)
+    return render_template("/dispositivosPeligrosos.html", graphDispPeligrosos=graphDispPeligrosos, swiMore=swi)
 
 @app.route("/10vulnerabilidades.html")
 def vulnerabilidades():

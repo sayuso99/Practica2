@@ -14,11 +14,11 @@
     <form action="" method="POST" id="busqueda">
         <label>Mayor al 33%</label>
         <label class="switch">
-          <input type="checkbox" checked>
+          <input type="checkbox" checked name="swiMore">
           <span class="slider round"></span>
         </label>
         <label>Menor al 33%</label>
-        <button type="submit">Aplicar</button>
+        <button type="submit">Aplicar {{swiMore}}</button>
     </form>
 	{% if graphDispPeligrosos %}
 		<div id='chart' class='chart'?></div>
