@@ -23,11 +23,12 @@ app = Flask(__name__)
 def index():
     return render_template("/index.html")
 
-@app.route("/ipProblematica.html")
+@app.route("/ipProblematica.html", methods=["GET","POST"])
 def ipProblematica():
+    num = request.form.get('numIPs', default=7)
     df_ipProblematica = pd.DataFrame()
     con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
-    query = con.execute("SELECT ORIGIN, COUNT(*) AS num FROM ALERTS GROUP BY ORIGIN ORDER BY num DESC LIMIT 10;")
+    query = con.execute("SELECT ORIGIN, COUNT(*) AS num FROM ALERTS GROUP BY ORIGIN ORDER BY num DESC LIMIT (?);", (num,))
     data = query.fetchall()
     df_problematic_ips = pd.DataFrame(data, columns=['origin', 'num'])
     fig = go.Figure(data=[
@@ -36,13 +37,14 @@ def ipProblematica():
     fig.update_layout(barmode='group') # title_text="Top IPs problematicas", title_font_size=41,
     a = plotly.utils.PlotlyJSONEncoder
     graphIpProblematicas = json.dumps(fig, cls=a)
-    return render_template("/ipProblematica.html", graphIpProblematicas=graphIpProblematicas)
+    return render_template("/ipProblematica.html", graphIpProblematicas=graphIpProblematicas, numIPs=num)
 
-@app.route("/dispositivosVulnerables.html")
+@app.route("/dispositivosVulnerables.html", methods=["GET","POST"])
 def dispositivosVulnerables():
+    num = request.form.get('numDisp', default=7)
     df_ipProblematica = pd.DataFrame()
     con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
-    query = con.execute("SELECT IP, (SERVICES+VULNERABILITIES) AS secure FROM DEVICES ORDER BY secure DESC LIMIT 10;")
+    query = con.execute("SELECT IP, (SERVICES+VULNERABILITIES) AS secure FROM DEVICES ORDER BY secure DESC LIMIT (?);", (num,))
     data = query.fetchall()
     df_problematic_ips = pd.DataFrame(data, columns=['IP', 'secure'])
     fig = go.Figure(data=[
@@ -51,7 +53,26 @@ def dispositivosVulnerables():
     fig.update_layout(barmode='group') #title_text="Top Dispositivos vulnerables", title_font_size=41,
     a = plotly.utils.PlotlyJSONEncoder
     graphDispVulnerables = json.dumps(fig, cls=a)
-    return render_template("/dispositivosVulnerables.html", graphDispVulnerables=graphDispVulnerables)
+    return render_template("/dispositivosVulnerables.html", graphDispVulnerables=graphDispVulnerables, numDisp=num)
+
+@app.route("/dispositivosPeligrosos.html", methods=["GET","POST"])
+def dispositivosPeligrosos():
+    swi = request.form.get('swiMore', default=7)
+    df_ipProblematica = pd.DataFrame()
+    con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
+    if swi == 0:
+        query = con.execute("SELECT ID, (SERVICES/INSECURES) AS secure FROM DEVICES WHERE (SERVICES/INSECURES) >= 0.33;")
+    else:
+        query = con.execute("SELECT ID, (SERVICES/INSECURES) AS secure FROM DEVICES WHERE (SERVICES/INSECURES) < 0.33;")
+    data = query.fetchall()
+    df_problematic_ips = pd.DataFrame(data, columns=['IP', 'secure'])
+    fig = go.Figure(data=[
+        go.Bar(x=df_problematic_ips['IP'], y=df_problematic_ips['secure'], marker_color='steelblue')
+    ])
+    fig.update_layout(barmode='group') #title_text="Top Dispositivos vulnerables", title_font_size=41,
+    a = plotly.utils.PlotlyJSONEncoder
+    graphDispPeligrosos = json.dumps(fig, cls=a)
+    return render_template("/dispositivosPeligrosos.html", graphDispVulnerables=graphDispPeligrosos, numDisp=swi)
 
 @app.route("/10vulnerabilidades.html")
 def vulnerabilidades():

@@ -7,9 +7,14 @@
     <div id="btns">
         <button onclick="location.href='./index.html'">Inicio</button>
         <button onclick="location.href='./dispositivosVulnerables.html'">Dispositivos m&aacute;s vulnerables</button>
+        <button onclick="location.href='./dispositivosPeligrosos.html'">Dispositivos m&aacute;s peligrosos</button>
         <button onclick="location.href='./10vulnerabilidades.html'">&Uacute;ltimas 10 vulnerabilidades en tiempo real</button>
     </div>
     <h1>IPs de origen m&aacute;s problem&aacute;ticas</h1>
+    <form action="" method="POST" id="busqueda">
+        <label>Nº de IPs:</label>
+        <input type="number" min="1" max="7" value="{{numIPs}}" name="numIPs"/>
+    </form>
 	{% if graphIpProblematicas %}
 		<div id='chart' class='chart'?></div>
 		<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>

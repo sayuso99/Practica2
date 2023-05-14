@@ -5,6 +5,7 @@ body {
     font-family: verdana;
     background-image: url("./background.avif");
     background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 
 h1 {
@@ -16,10 +17,22 @@ h1 {
     font-size: 40px;
 }
 
+#nombres {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+    #nombres h2 {
+        color: white;
+        margin-left: 17px;
+        margin-right: 17px;
+    }
+
 #btns {
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin-top: 30px;
 }
     #btns button {
         padding: 15px;

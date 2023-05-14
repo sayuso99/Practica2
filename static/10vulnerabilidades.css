@@ -5,6 +5,7 @@ body {
     font-family: verdana;
     background-image: url("./background.avif");
     background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
 
 #btns {
