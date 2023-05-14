@@ -4,11 +4,16 @@
 </head>
 
 <body>
-    <h1>&Uacute;ltimas 10 vulnerabilidades en tiempo real</h1>
     <div id="btns">
-        <button>IPs de origen m&aacute;s problem&aacute;ticas</button>
-        <button>Dispositivos m&aacute;s vulnerables</button>
-        <button>&Uacute;ltimas 10 vulnerabilidades en tiempo real</button>
+        <button onclick="location.href='./index.html'">Inicio</button>
+        <button onclick="location.href='./dispositivosVulnerables.html'">Dispositivos m&aacute;s vulnerables</button>
+        <button onclick="location.href='./ipProblematica.html'">IPs de origen m&aacute;s problem&aacute;ticas</button>
+    </div>
+    <h1>&Uacute;ltimas 10 vulnerabilidades en tiempo real</h1>
+    <div id="table">
+	    {% if tablaTopVul %}
+		    {{ tablaTopVul | safe}}
+	    {% endif %}
     </div>
 </body>
 
