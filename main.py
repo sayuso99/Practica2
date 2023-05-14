@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request
-from sklearn import tree
+from flask import Flask, render_template, request, redirect, session
+from sklearn.linear_model import LinearRegression
 import requests
 import json
 import plotly.utils
 import sqlite3
 import pandas as pd
 import plotly.graph_objects as go
+import numpy as np
 
 def decisionTreeClassifier():
     print("Arbol de decision")
@@ -18,7 +19,21 @@ def randomForest():
 
 app = Flask(__name__)
 
-@app.route("/")
+usuarios = [["admin", "pass"], ["user", "pass"]]
+app.secret_key = "Key"
+
+@app.route("/", methods=["GET","POST"])
+def inicio():
+    if(request.method == "POST"):
+        user = request.form.get('user')
+        passwd = request.form.get('password')
+        for i in range(len(usuarios)):
+            if(usuarios[i][0] == user and usuarios[i][1] == passwd):
+                session['user'] = user
+                return redirect('index.html')
+        return "Usuario o contraseña incorrectos"
+    return render_template("login.html")
+
 @app.route("/index.html")
 def index():
     return render_template("/index.html")
@@ -95,6 +110,20 @@ def vulnerabilidades():
                     align='left'))])
     tablaTopVul = plotly.io.to_html(fig)
     return render_template("/10vulnerabilidades.html",tablaTopVul=tablaTopVul)
+
+@app.route("/regresionLineal.html", methods=["GET","POST"])
+def regresionLineal():
+    with open("./data/devices_IA_predecir_v2.json", "r") as archivo:
+        datosEntrenamiento = json.load(archivo)
+
+    X_train = np.array([[d["servicios"], d["servicios_inseguros"]] for d in datosEntrenamiento])
+    y_train = np.array([d["peligroso"] for d in datosEntrenamiento])
+
+    regresionLineal = LinearRegression()
+
+    regresionLineal.fit(X_train, y_train)
+
+    return render_template("/regresionLineal.html", regresionLnealCoef=regresionLineal.coef_, regresionLnealInter=regresionLineal.intercept_, graphLinealRegresion="")
 
 if __name__ == '__main__':
    app.run(debug = True)

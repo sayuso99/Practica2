@@ -1,0 +1,42 @@
+body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    font-family: verdana;
+    background-image: url("./background.avif");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+h1 {
+    width: 100%;
+    text-align:center;
+    margin-top: 95px;
+    margin-bottom: 60px;
+    color: white;
+    font-size: 40px;
+}
+
+#login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+    #login input, #login button {
+        padding: 15px;
+        color: white;
+        background-color: #0EA6E8;
+        border-radius: 10px;
+        font-size: 17px;
+        margin-top: 20px;
+    }
+        #login input::placeholder {
+            color: white;
+        }
+    #login button {
+        cursor: pointer;
+    }
+        #login button:hover {
+            border: 1px solid white;
+        }

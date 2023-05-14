@@ -1,0 +1,25 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../static/regresionLineal.css"/>
+</head>
+
+<body>
+    <div id="btns">
+        <button onclick="location.href='./index.html'">Inicio</button>
+        <button onclick="location.href='./ipProblematica.html'">IPs de origen m&aacute;s problem&aacute;ticas</button>
+        <button onclick="location.href='./dispositivosPeligrosos.html'">Dispositivos m&aacute;s peligrosos</button>
+        <button onclick="location.href='./10vulnerabilidades.html'">&Uacute;ltimas 10 vulnerabilidades en tiempo real</button>
+    </div>
+    <h1>Regresi&oacute;n lineal</h1>
+    <p id="datos">{{regresionLnealCoef}} - {{regresionLnealInter}}<p/>
+	{% if graphLinealRegresion %}
+		<div id='chart' class='chart'?></div>
+		<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+		<script type='text/javascript'>
+		  var graphs = {{graphLinealRegresion | safe}};
+		  Plotly.plot('chart',graphs,{});
+		</script>
+	{% endif %}
+</body>
+
+</html>
