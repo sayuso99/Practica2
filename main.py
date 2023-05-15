@@ -8,24 +8,15 @@ import pandas as pd
 import plotly.graph_objects as go
 import numpy as np
 import matplotlib.pyplot as plt
-import tempfile
-import io
-import os
-import base64
-from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.tree import DecisionTreeClassifier, plot_tree
+from sklearn.tree import plot_tree
 from sklearn import tree
-from sklearn.tree import export_graphviz
-import pydotplus
 from sklearn.metrics import accuracy_score
-
 
 app = Flask(__name__)
 
 usuarios = [["admin", "pass"], ["user", "pass"]]
 app.secret_key = "Key"
-
 
 @app.route("/", methods=["GET", "POST"])
 def inicio():
@@ -39,11 +30,9 @@ def inicio():
         return "Usuario o contraseña incorrectos"
     return render_template("login.html")
 
-
 @app.route("/index.html")
 def index():
     return render_template("/index.html")
-
 
 @app.route("/ipProblematica.html", methods=["GET", "POST"])
 def ipProblematica():
@@ -62,7 +51,6 @@ def ipProblematica():
     graphIpProblematicas = json.dumps(fig, cls=a)
     return render_template("/ipProblematica.html", graphIpProblematicas=graphIpProblematicas, numIPs=num)
 
-
 @app.route("/dispositivosVulnerables.html", methods=["GET", "POST"])
 def dispositivosVulnerables():
     num = request.form.get('numDisp', default=7)
@@ -79,7 +67,6 @@ def dispositivosVulnerables():
     a = plotly.utils.PlotlyJSONEncoder
     graphDispVulnerables = json.dumps(fig, cls=a)
     return render_template("/dispositivosVulnerables.html", graphDispVulnerables=graphDispVulnerables, numDisp=num)
-
 
 @app.route("/dispositivosPeligrosos.html", methods=["GET", "POST"])
 def dispositivosPeligrosos():
@@ -102,7 +89,6 @@ def dispositivosPeligrosos():
     graphDispPeligrosos = json.dumps(fig, cls=a)
     return render_template("/dispositivosPeligrosos.html", graphDispPeligrosos=graphDispPeligrosos, swiMore=swi)
 
-
 @app.route("/10vulnerabilidades.html")
 def vulnerabilidades():
     page = requests.get("https://cve.circl.lu/api/last")
@@ -124,7 +110,6 @@ def vulnerabilidades():
                    align='left'))])
     tablaTopVul = plotly.io.to_html(fig)
     return render_template("/10vulnerabilidades.html", tablaTopVul=tablaTopVul)
-
 
 @app.route("/regresionLineal.html", methods=["GET", "POST"])
 def RegLineal():
@@ -173,7 +158,6 @@ def RegLineal():
     plt.close()
 
     return render_template('/regresionLineal.html', graphLinealRegresion="static/plot.png")
-
 
 @app.route("/arbolDecision.html", methods=["GET", "POST"])
 def DecisionTree():
@@ -272,7 +256,6 @@ def RandomForest():
         graph_files.append(file_name)
 
     return render_template('/randomForest.html', graphRandomForest=graph_files)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
