@@ -175,7 +175,7 @@ def RegLineal():
     return render_template('/regresionLineal.html', graphLinealRegresion="static/plot.png")
 
 
-@app.route("/ArbolDecision.html", methods=["GET", "POST"])
+@app.route("/arbolDecision.html", methods=["GET", "POST"])
 def DecisionTree():
     json_entrenamiento = "data/devices_IA_clases.json"
     json_prueba = "data/devices_IA_predecir_v2.json"
@@ -220,9 +220,9 @@ def DecisionTree():
     plt.savefig("static/decisionTree.png")
     plt.close(fig)
 
-    return render_template('ArbolDecision.html', graphDecisionTree="static/decisionTree.png")
+    return render_template('arbolDecision.html', graphDecisionTree="static/decisionTree.png")
 
-@app.route("/RandomForest.html", methods=["GET", "POST"])
+@app.route("/randomForest.html", methods=["GET", "POST"])
 def RandomForest():
     json_entrenamiento = "data/devices_IA_clases.json"
     json_prueba = "data/devices_IA_predecir_v2.json"
@@ -266,7 +266,7 @@ def RandomForest():
             precision=4,
             ax=ax
         )
-        file_name = f"decisionTree_{i}.png"
+        file_name = f"static/decisionTree_{i}.png"
         plt.savefig(file_name)
         plt.close(fig)
         graph_files.append(file_name)

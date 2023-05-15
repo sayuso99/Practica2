@@ -1,20 +1,5 @@
-body {
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-    font-family: verdana;
-    background-image: url("./background.avif");
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-}
-
 h1 {
-    width: 100%;
-    text-align:center;
-    margin-top: 95px;
-    margin-bottom: 60px;
-    color: white;
-    font-size: 40px;
+    margin-top: 70px;
 }
 
 #nombres {
@@ -30,10 +15,16 @@ h1 {
 
 #btns {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     margin-top: 30px;
 }
+    #btns1, #btns2 {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
     #btns button {
         padding: 15px;
         border: none;
