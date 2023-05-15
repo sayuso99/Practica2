@@ -1,0 +1,20 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../static/general.css"/>
+    <link rel="stylesheet" href="../static/regresionLineal.css"/>
+</head>
+
+<body>
+    <div id="btns">
+        <button onclick="location.href='./index.html'">Inicio</button>
+        <button onclick="location.href='./randomForest.html'">Random forest</button>
+        <button onclick="location.href='./regresionLineal.html'">Regresi&oacute;n lineal</button>
+    </div>
+    <h1>Árbol de Decisión</h1>
+    <div style="text-align: center">
+        {% if graphDecisionTree %}
+        <div id='chart' class='chart'><img src="{{ url_for('static', filename='decisionTree.png') }}" alt="Árbol de Decisión" style="width:90vw;"></div>
+        {% endif %}
+    </div>
+</body>
+</html>

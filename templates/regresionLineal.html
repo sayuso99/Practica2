@@ -1,0 +1,20 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../static/general.css"/>
+    <link rel="stylesheet" href="../static/regresionLineal.css"/>
+</head>
+
+<body>
+    <div id="btns">
+        <button onclick="location.href='./index.html'">Inicio</button>
+        <button onclick="location.href='./arbolDecision.html'">Arbol de decisi&oacute;n</button>
+        <button onclick="location.href='./randomForest.html'">Random forest</button>
+    </div>
+    <h1>Regresi&oacute;n lineal</h1>
+    <div style="text-align: center">{% if graphLinealRegresion %}
+        <div id='chart' class='chart'><img src="{{ url_for('static', filename='plot.png') }}" alt="Regresion lineal" style="width:60vw;"></div>
+    {% endif %}
+    </div>
+</body>
+
+</html>

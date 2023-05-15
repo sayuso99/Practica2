@@ -1,0 +1,29 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../static/general.css"/>
+    <link rel="stylesheet" href="../static/dispositivosVulnerables.css"/>
+</head>
+
+<body>
+    <div id="btns">
+        <button onclick="location.href='./index.html'">Inicio</button>
+        <button onclick="location.href='./ipProblematica.html'">IPs de origen m&aacute;s problem&aacute;ticas</button>
+        <button onclick="location.href='./dispositivosPeligrosos.html'">Dispositivos m&aacute;s peligrosos</button>
+        <button onclick="location.href='./10vulnerabilidades.html'">&Uacute;ltimas 10 vulnerabilidades en tiempo real</button>
+    </div>
+    <h1>Dispositivos m&aacute;s vulnerables</h1>
+    <form action="" method="POST" id="busqueda">
+        <label>Nº de dispositivos:</label>
+        <input type="number" min="1" max="7" value="{{numDisp}}" name="numDisp"/>
+    </form>
+	{% if graphDispVulnerables %}
+		<div id='chart' class='chart'?></div>
+		<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+		<script type='text/javascript'>
+		  var graphs = {{graphDispVulnerables | safe}};
+		  Plotly.plot('chart',graphs,{});
+		</script>
+	{% endif %}
+</body>
+
+</html>

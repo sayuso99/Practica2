@@ -1,0 +1,21 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../static/10vulnerabilidades.css"/>
+</head>
+
+<body>
+    <div id="btns">
+        <button onclick="location.href='./index.html'">Inicio</button>
+        <button onclick="location.href='./dispositivosVulnerables.html'">Dispositivos m&aacute;s vulnerables</button>
+        <button onclick="location.href='./dispositivosPeligrosos.html'">Dispositivos m&aacute;s peligrosos</button>
+        <button onclick="location.href='./ipProblematica.html'">IPs de origen m&aacute;s problem&aacute;ticas</button>
+    </div>
+    <h1>&Uacute;ltimas 10 vulnerabilidades en tiempo real</h1>
+    <div id="table">
+	    {% if tablaTopVul %}
+		    {{ tablaTopVul | safe}}
+	    {% endif %}
+    </div>
+</body>
+
+</html>

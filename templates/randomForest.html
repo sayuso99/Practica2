@@ -1,0 +1,22 @@
+<html>
+<head>
+    <link rel="stylesheet" href="../static/general.css"/>
+    <link rel="stylesheet" href="../static/regresionLineal.css"/>
+</head>
+
+<body>
+    <div id="btns">
+        <button onclick="location.href='./index.html'">Inicio</button>
+        <button onclick="location.href='./arbolDecision.html'">Arbol de decisi&oacute;n</button>
+        <button onclick="location.href='./regresionLineal.html'">Regresi&oacute;n lineal</button>
+    </div>
+    <h1>Random Forest</h1>
+    <div style="text-align: center">
+        {% if graphRandomForest %}
+        {% for graph in graphRandomForest %}
+        <div id='chart' class='chart'><img src="{{graph}}" alt="Random Forest"></div>
+        {% endfor %}
+        {% endif %}
+    </div>
+</body>
+</html>
