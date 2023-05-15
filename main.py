@@ -176,6 +176,7 @@ def RegLineal():
 
 
 @app.route("/ArbolDecision.html", methods=["GET", "POST"])
+@app.route("/ArbolDecision.html", methods=["GET", "POST"])
 def DecisionTree():
     json_entrenamiento = "data/devices_IA_clases.json"
     json_prueba = "data/devices_IA_predecir_v2.json"
@@ -201,17 +202,12 @@ def DecisionTree():
     y_pred = clf_model.predict(x_test.reshape(-1, 1))
     peligrosos = sum(y_pred)
     no_peligrosos = len(y_pred) - peligrosos
-    print("El modelo de árbol de decisión ha predicho:")
-    print(peligrosos, "dispositivos peligrosos y", no_peligrosos, "dispositivos no peligrosos")
 
     # Calculamos el accuracy
     accuracy = accuracy_score(y_test, y_pred)
-    print("El accuracy es de:", accuracy * 100, "%\n")
 
     # Gráfico árbol de decisión
     fig, ax = plt.subplots(figsize=(12, 5))
-    print(f"Profundidad del árbol: {clf_model.get_depth()}")
-    print(f"Número de nodos terminales: {clf_model.get_n_leaves()}\n")
     plot = plot_tree(
         decision_tree=clf_model,
         feature_names=['Servicios'],
@@ -223,10 +219,9 @@ def DecisionTree():
         ax=ax
     )
     plt.savefig("static/decisionTree.png")
-    plt.show()
+    plt.close(fig)
 
     return render_template('ArbolDecision.html', graphDecisionTree="static/decisionTree.png")
-
 
 @app.route("/RandomForest.html", methods=["GET", "POST"])
 def RandomForest():
@@ -240,8 +235,11 @@ def RandomForest():
 
     # Preparar los datos de entrenamiento y prueba
     x_train = np.array([d["servicios"] for d in datos_entrenamiento])
-    y_train = np.array([d["servicios_inseguros"] / d["servicios"] >= 0.33 for d in datos_entrenamiento])
+    y_train = np.array([(d["servicios_inseguros"] / d["servicios"]) >= 0.33 if d["servicios"] != 0 else False for d in
+                        datos_entrenamiento])
     x_test = np.array([d["servicios"] for d in datos_prueba])
+    y_test = np.array([(d["servicios_inseguros"] / d["servicios"]) >= 0.33 if d["servicios"] != 0 else False for d in
+                       datos_prueba])
 
     # Creamos el modelo de Random Forest
     clf_model = RandomForestClassifier(max_depth=2, random_state=0, n_estimators=10)
@@ -251,14 +249,12 @@ def RandomForest():
     y_pred = clf_model.predict(x_test.reshape(-1, 1))
     peligrosos = sum(y_pred)
     no_peligrosos = len(y_pred) - peligrosos
-    print("El modelo de Random Forest ha predicho:")
-    print(peligrosos, "dispositivos peligrosos y", no_peligrosos, "dispositivos no peligrosos")
 
     # Calculamos el accuracy
     accuracy = accuracy_score(y_test, y_pred)
-    print("El accuracy es de:", accuracy * 100, "%\n")
 
     # Graficar los árboles del Random Forest
+    graph_files = []
     for i, estimator in enumerate(clf_model.estimators_):
         fig, ax = plt.subplots(figsize=(12, 5))
         plot = plot_tree(
@@ -271,10 +267,12 @@ def RandomForest():
             precision=4,
             ax=ax
         )
-        plt.savefig(f"static/decisionTree_{i}.png")
-        plt.show()
+        file_name = f"static/decisionTree_{i}.png"
+        plt.savefig(file_name)
+        plt.close(fig)
+        graph_files.append(file_name)
 
-    return render_template('/randomForest.html', graphRandomForest="static/decisionTree_0.png")
+    return render_template('/randomForest.html', graphRandomForest=graph_files)
 
 
 if __name__ == '__main__':

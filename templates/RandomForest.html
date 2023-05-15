@@ -13,7 +13,9 @@
     <h1>Random Forest</h1>
     <div style="text-align: center">
         {% if graphRandomForest %}
-        <div id='chart' class='chart'><img src="{{ url_for('static', filename='random_forest_plot.png') }}" alt="Random Forest"></div>
+        {% for graph in graphRandomForest %}
+        <div id='chart' class='chart'><img src="{{ url_for('static', filename=graph) }}" alt="Random Forest"></div>
+        {% endfor %}
         {% endif %}
     </div>
 </body>
