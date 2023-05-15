@@ -14,15 +14,17 @@ from sklearn import tree
 from sklearn.metrics import accuracy_score
 
 app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
 
 usuarios = [["admin", "pass"], ["user", "pass"]]
 app.secret_key = "Key"
 
 @app.route("/", methods=["GET", "POST"])
 def inicio():
-    if (request.method == "POST"):
+    if (request.method=="POST"):
         user = request.form.get('user')
-        passwd = request.form.get('password')
+        passwd = request.form.get('passwd')
         for i in range(len(usuarios)):
             if (usuarios[i][0] == user and usuarios[i][1] == passwd):
                 session['user'] = user
@@ -32,10 +34,19 @@ def inicio():
 
 @app.route("/index.html")
 def index():
+    if not session.get("user"):
+        return redirect("/")
     return render_template("/index.html")
+
+@app.route("/logout.html")
+def logout():
+    session['user'] = None
+    return render_template("login.html")
 
 @app.route("/ipProblematica.html", methods=["GET", "POST"])
 def ipProblematica():
+    if not session.get("user"):
+        return redirect("/")
     num = request.form.get('numIPs', default=7)
     df_ipProblematica = pd.DataFrame()
     con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
@@ -53,6 +64,8 @@ def ipProblematica():
 
 @app.route("/dispositivosVulnerables.html", methods=["GET", "POST"])
 def dispositivosVulnerables():
+    if not session.get("user"):
+        return redirect("/")
     num = request.form.get('numDisp', default=7)
     df_ipProblematica = pd.DataFrame()
     con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
@@ -70,6 +83,8 @@ def dispositivosVulnerables():
 
 @app.route("/dispositivosPeligrosos.html", methods=["GET", "POST"])
 def dispositivosPeligrosos():
+    if not session.get("user"):
+        return redirect("/")
     swi = request.form.get('swiMore', default="")
     df_ipProblematica = pd.DataFrame()
     con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
@@ -91,6 +106,8 @@ def dispositivosPeligrosos():
 
 @app.route("/10vulnerabilidades.html")
 def vulnerabilidades():
+    if not session.get("user"):
+        return redirect("/")
     page = requests.get("https://cve.circl.lu/api/last")
     jsons = page.json()
     listaCve = []
@@ -113,6 +130,8 @@ def vulnerabilidades():
 
 @app.route("/regresionLineal.html", methods=["GET", "POST"])
 def RegLineal():
+    if not session.get("user"):
+        return redirect("/")
     json_entrenamiento = "data/devices_IA_clases.json"
     json_prueba = "data/devices_IA_predecir_v2.json"
     with open(json_entrenamiento, "r") as archivo_entrenamiento:
@@ -161,6 +180,8 @@ def RegLineal():
 
 @app.route("/arbolDecision.html", methods=["GET", "POST"])
 def DecisionTree():
+    if not session.get("user"):
+        return redirect("/")
     json_entrenamiento = "data/devices_IA_clases.json"
     json_prueba = "data/devices_IA_predecir_v2.json"
     with open(json_entrenamiento, "r") as archivo_entrenamiento:
@@ -208,6 +229,8 @@ def DecisionTree():
 
 @app.route("/randomForest.html", methods=["GET", "POST"])
 def RandomForest():
+    if not session.get("user"):
+        return redirect("/")
     json_entrenamiento = "data/devices_IA_clases.json"
     json_prueba = "data/devices_IA_predecir_v2.json"
     with open(json_entrenamiento, "r") as archivo_entrenamiento:
