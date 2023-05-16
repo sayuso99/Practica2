@@ -1,0 +1,25 @@
+#busqueda {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+    #busqueda label {
+        color: white;
+        font-size: 22px;
+        margin-right: 10px;
+    }
+    #busqueda input {
+        padding: 15px;
+        color: white;
+        background-color: #0EA6E8;
+        border-radius: 10px;
+        font-size: 17px;
+        margin-left: 10px;
+    }
+
+#chart {
+    width: 90vw;
+    margin-left: 5vw;
+    text-align:center;
+}

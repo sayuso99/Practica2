@@ -62,6 +62,24 @@ def ipProblematica():
     graphIpProblematicas = json.dumps(fig, cls=a)
     return render_template("/ipProblematica.html", graphIpProblematicas=graphIpProblematicas, numIPs=num)
 
+@app.route("/ipDiarias.html", methods=["GET", "POST"])
+def ipDiarias():
+    if not session.get("user"):
+        return redirect("/")
+    date = request.form.get('date', default='2022-07-03')
+    con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
+    query = con.execute("SELECT origin, COUNT(*) FROM ALERTS WHERE substr(dateTime, 1, 10) = (?) GROUP BY origin ORDER BY COUNT(*)",
+                        (date,))
+    data = query.fetchall()
+    df_date_ips = pd.DataFrame(data, columns=['origin', 'num'])
+    fig = go.Figure(data=[
+        go.Bar(x=df_date_ips['origin'], y=df_date_ips['num'], marker_color='steelblue')
+    ])
+    fig.update_layout(barmode='group')  # title_text="Top IPs problematicas", title_font_size=41,
+    a = plotly.utils.PlotlyJSONEncoder
+    graphIpDiarias = json.dumps(fig, cls=a)
+    return render_template("/ipDiarias.html", graphIpDiarias=graphIpDiarias, date=date)
+
 @app.route("/dispositivosVulnerables.html", methods=["GET", "POST"])
 def dispositivosVulnerables():
     if not session.get("user"):
