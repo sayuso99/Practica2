@@ -235,7 +235,7 @@ def ArbolDecision():
     clf.fit(X_train.reshape(-1, 1), y_train)
 
     # Generar el gráfico del árbol de decisión
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(8, 4))
     plot = plot_tree(
         decision_tree=clf,
         feature_names=['Servicios'],
