@@ -108,16 +108,18 @@ def dispositivosPeligrosos():
     con = sqlite3.connect('./sqlite-tools-win32-x86-3410000/PRACTICA1.db')
     if swi == "on":
         query = con.execute(
-            "SELECT ID, (SERVICES||'.0'/INSECURES) AS secure FROM DEVICES WHERE (SERVICES/INSECURES) >= 0.33;")
+            "SELECT ID, CASE WHEN SERVICES = 0 THEN 0.0 ELSE (CAST(INSECURES AS FLOAT) / SERVICES) END AS secure FROM DEVICES WHERE CASE WHEN SERVICES = 0 THEN 0.0 ELSE (CAST(INSECURES AS FLOAT) / SERVICES) END >= 0.33;")
     else:
         query = con.execute(
-            "SELECT ID, (SERVICES||'.0'/INSECURES) AS secure FROM DEVICES WHERE (SERVICES/INSECURES) < 0.33;")
+            "SELECT ID, CASE WHEN SERVICES = 0 THEN 0.0 ELSE (CAST(INSECURES AS FLOAT) / SERVICES) END AS secure FROM DEVICES WHERE CASE WHEN SERVICES = 0 THEN 0.0 ELSE (CAST(INSECURES AS FLOAT) / SERVICES) END < 0.33;")
     data = query.fetchall()
     df_problematic_ips = pd.DataFrame(data, columns=['IP', 'secure'])
+    df_problematic_ips['secure'] = df_problematic_ips["secure"].apply(lambda x: 0.005 if x == 0 else x)
     fig = go.Figure(data=[
         go.Bar(x=df_problematic_ips['IP'], y=df_problematic_ips['secure'], marker_color='steelblue')
     ])
     fig.update_layout(barmode='group')  # title_text="Top Dispositivos vulnerables", title_font_size=41,
+    fig.update_yaxes(range=[0.0, max(df_problematic_ips['secure'])+1])
     a = plotly.utils.PlotlyJSONEncoder
     graphDispPeligrosos = json.dumps(fig, cls=a)
     return render_template("/dispositivosPeligrosos.html", graphDispPeligrosos=graphDispPeligrosos, swiMore=swi)
