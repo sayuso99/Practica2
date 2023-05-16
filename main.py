@@ -1,3 +1,5 @@
+import base64
+
 from flask import Flask, render_template, request, redirect, session
 from sklearn.linear_model import LinearRegression
 import requests
@@ -11,7 +13,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import plot_tree
 from sklearn import tree
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, r2_score
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -20,9 +22,10 @@ app.config["SESSION_TYPE"] = "filesystem"
 usuarios = [["admin", "pass"], ["user", "pass"]]
 app.secret_key = "Key"
 
+
 @app.route("/", methods=["GET", "POST"])
 def inicio():
-    if (request.method=="POST"):
+    if (request.method == "POST"):
         user = request.form.get('user')
         passwd = request.form.get('passwd')
         for i in range(len(usuarios)):
@@ -32,16 +35,19 @@ def inicio():
         return "Usuario o contraseña incorrectos"
     return render_template("login.html")
 
+
 @app.route("/index.html")
 def index():
     if not session.get("user"):
         return redirect("/")
     return render_template("/index.html")
 
+
 @app.route("/logout.html")
 def logout():
     session['user'] = None
     return render_template("login.html")
+
 
 @app.route("/ipProblematica.html", methods=["GET", "POST"])
 def ipProblematica():
@@ -80,6 +86,7 @@ def ipDiarias():
     graphIpDiarias = json.dumps(fig, cls=a)
     return render_template("/ipDiarias.html", graphIpDiarias=graphIpDiarias, date=date)
 
+
 @app.route("/dispositivosVulnerables.html", methods=["GET", "POST"])
 def dispositivosVulnerables():
     if not session.get("user"):
@@ -98,6 +105,7 @@ def dispositivosVulnerables():
     a = plotly.utils.PlotlyJSONEncoder
     graphDispVulnerables = json.dumps(fig, cls=a)
     return render_template("/dispositivosVulnerables.html", graphDispVulnerables=graphDispVulnerables, numDisp=num)
+
 
 @app.route("/dispositivosPeligrosos.html", methods=["GET", "POST"])
 def dispositivosPeligrosos():
@@ -124,6 +132,7 @@ def dispositivosPeligrosos():
     graphDispPeligrosos = json.dumps(fig, cls=a)
     return render_template("/dispositivosPeligrosos.html", graphDispPeligrosos=graphDispPeligrosos, swiMore=swi)
 
+
 @app.route("/10vulnerabilidades.html")
 def vulnerabilidades():
     if not session.get("user"):
@@ -148,12 +157,15 @@ def vulnerabilidades():
     tablaTopVul = plotly.io.to_html(fig)
     return render_template("/10vulnerabilidades.html", tablaTopVul=tablaTopVul)
 
+
 @app.route("/regresionLineal.html", methods=["GET", "POST"])
 def RegLineal():
     if not session.get("user"):
         return redirect("/")
+
     json_entrenamiento = "data/devices_IA_clases.json"
     json_prueba = "data/devices_IA_predecir_v2.json"
+
     with open(json_entrenamiento, "r") as archivo_entrenamiento:
         datos_entrenamiento = json.load(archivo_entrenamiento)
 
@@ -164,6 +176,7 @@ def RegLineal():
     y = np.array([d["servicios_inseguros"] for d in datos_prueba])
     etiquetas = []
     colores = []
+
     for d in datos_prueba:
         servicios = d["servicios"]
         servicios_inseguros = d["servicios_inseguros"]
@@ -176,19 +189,19 @@ def RegLineal():
             etiquetas.append("Seguros")
             colores.append("blue")
 
-    # Realizar la regresión lineal
+    # Realizar la regresion lineal
     regresion_lineal = LinearRegression()
     regresion_lineal.fit(x.reshape(-1, 1), y)
 
-    # Calcular los puntos para trazar la línea de regresión
+    # Calcular los puntos para trazar la linea de regresion
     x_line = np.array([min(x), max(x)]).reshape(-1, 1)
     y_line = regresion_lineal.predict(x_line)
 
-    # Plotear los puntos y la línea de regresión
+    # Plotear los puntos y la linea de regresion
     plt.scatter(x, y, c=colores)
     plt.plot(x_line, y_line, color='black', linewidth=2)
 
-    # Configuración del gráfico
+    # Configuracion del grafico
     plt.xlabel('Servicios')
     plt.ylabel('Servicios Inseguros')
     plt.title('Regresión Lineal')
@@ -198,10 +211,13 @@ def RegLineal():
 
     return render_template('/regresionLineal.html', graphLinealRegresion="static/plot.png")
 
+
 @app.route("/arbolDecision.html", methods=["GET", "POST"])
-def DecisionTree():
+def ArbolDecision():
     if not session.get("user"):
         return redirect("/")
+
+    # Cargar los datos de entrenamiento y prueba
     json_entrenamiento = "data/devices_IA_clases.json"
     json_prueba = "data/devices_IA_predecir_v2.json"
     with open(json_entrenamiento, "r") as archivo_entrenamiento:
@@ -210,42 +226,31 @@ def DecisionTree():
     with open(json_prueba, "r") as archivo_prueba:
         datos_prueba = json.load(archivo_prueba)
 
-    # Preparar los datos de entrenamiento y prueba
-    x_train = np.array([d["servicios"] for d in datos_entrenamiento])
-    y_train = np.array([(d["servicios_inseguros"] / d["servicios"]) >= 0.33 if d["servicios"] != 0 else False for d in
-                        datos_entrenamiento])
-    x_test = np.array([d["servicios"] for d in datos_prueba])
-    y_test = np.array([(d["servicios_inseguros"] / d["servicios"]) >= 0.33 if d["servicios"] != 0 else False for d in
-                       datos_prueba])
+    # Obtener las características (X) y las etiquetas (y) de entrenamiento
+    X_train = np.array([d["servicios"] for d in datos_entrenamiento])
+    y_train = np.array([d["peligroso"] for d in datos_entrenamiento])
 
-    # Creamos el modelo del árbol de decisión
-    clf_model = tree.DecisionTreeClassifier()
-    clf_model.fit(x_train.reshape(-1, 1), y_train)
+    # Crear el modelo del árbol de decisión
+    clf = tree.DecisionTreeClassifier(max_depth=3)
+    clf.fit(X_train.reshape(-1, 1), y_train)
 
-    # Hacemos predicciones
-    y_pred = clf_model.predict(x_test.reshape(-1, 1))
-    peligrosos = sum(y_pred)
-    no_peligrosos = len(y_pred) - peligrosos
-
-    # Calculamos el accuracy
-    accuracy = accuracy_score(y_test, y_pred)
-
-    # Gráfico árbol de decisión
-    fig, ax = plt.subplots(figsize=(12, 5))
+    # Generar el gráfico del árbol de decisión
+    fig, ax = plt.subplots()
     plot = plot_tree(
-        decision_tree=clf_model,
+        decision_tree=clf,
         feature_names=['Servicios'],
-        class_names=['No peligroso', 'Peligroso'],
+        class_names=['No Peligroso', 'Peligroso'],
         filled=True,
         impurity=False,
         fontsize=9,
         precision=4,
         ax=ax
     )
-    plt.savefig("static/decisionTree.png")
-    plt.close(fig)
+    plt.savefig("static/decision_tree.png")
+    plt.close()
 
-    return render_template('arbolDecision.html', graphDecisionTree="static/decisionTree.png")
+    return render_template('/arbolDecision.html', graphDecisionTree="static/decision_tree.png")
+
 
 @app.route("/randomForest.html", methods=["GET", "POST"])
 def RandomForest():
@@ -299,6 +304,7 @@ def RandomForest():
         graph_files.append(file_name)
 
     return render_template('/randomForest.html', graphRandomForest=graph_files)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
